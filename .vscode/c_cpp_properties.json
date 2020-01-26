@@ -3,6 +3,7 @@
         {
             "name": "Mac",
             "includePath": [
+                "/Users/ming/Documents/Arduino/libraries/MPU6050/src",
                 "/Users/ming/Documents/Arduino/libraries/Adafruit_Motor_Shield_library",
                 "/Applications/Arduino.app/Contents/Java/tools/**",
                 "/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/**"
