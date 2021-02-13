@@ -1,4 +1,5 @@
 from imutils.video import VideoStream
+import imutils
 import imagezmq
 import argparse
 import socket
@@ -26,4 +27,5 @@ time.sleep(2.0)
 while True:
     # read the frame from the camera and send it to the server
     frame = vs.read()
+    frame = imutils.resize(frame, width=320)
     sender.send_image(rpiName, frame)
