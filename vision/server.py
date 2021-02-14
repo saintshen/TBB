@@ -7,6 +7,7 @@ import argparse
 import imutils
 import cv2
 import logging
+import os
 from flask import Flask, render_template, Response
 
 
@@ -28,7 +29,7 @@ outputFrame = None
 lock = threading.Lock()
 
 
-def hub_recv_image(frameCount):
+def hub_recv_image():
     # grab global references to the output frame and lock variables
     global imageHub, outputFrame, lock, lastActiveCheck, lastActive
 
@@ -74,20 +75,6 @@ def hub_recv_image(frameCount):
             lastActiveCheck = datetime.now()
 
 
-app = Flask(__name__)
-log.info("Starting server.")
-
-
-@app.route("/")
-def index():
-    return render_template("index.html")
-
-
-@app.route('/video_feed')
-def video_feed():
-    return Response(generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
 def generate():
     # grab global references to the output frame and lock variables
     global outputFrame, lock
@@ -111,32 +98,22 @@ def generate():
         yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
               bytearray(encodedImage) + b'\r\n')
 
+app = Flask(__name__)
+
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+@app.route('/video_feed')
+def video_feed():
+    return Response(generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
+ 
+# start a thread that will perform motion detection
+t = threading.Thread(target=hub_recv_image)
+t.daemon = True
+t.start()
+
 
 # check to see if this is the main thread of execution
 if __name__ == '__main__':
-    # construct the argument parser and parse command line arguments
-    ap = argparse.ArgumentParser()
-    ap.add_argument("-i", "--ip", type=str, default="0.0.0.0",
-                    help="ip address of the device")
-    ap.add_argument("-o", "--port", type=int, default=8000,
-                    help="ephemeral port number of the server (1024 to 65535)")
-    ap.add_argument("-f", "--frame-count", type=int, default=32,
-                    help="# of frames used to construct the background model")
-    ap.add_argument("-mW", "--montageW", type=int, default=2,
-                    help="montage frame width")
-    ap.add_argument("-mH", "--montageH", type=int, default=2,
-                    help="montage frame height")
-
-    args = vars(ap.parse_args())
-    # start a thread that will perform motion detection
-    t = threading.Thread(target=hub_recv_image, args=(
-        args["frame_count"],))
-    t.daemon = True
-    t.start()
-    # start the flask app
-    app.run(host=args["ip"], port=args["port"], debug=True,
-            threaded=True, use_reloader=False)
-
-# start the flask app
-app.run(host=args["ip"], port=args["port"], debug=True,
-        threaded=True, use_reloader=False)
+    app.run()
