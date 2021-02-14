@@ -3,7 +3,6 @@ from imutils import build_montages
 import numpy as numpy
 import imagezmq
 import threading
-import argparse
 import imutils
 import cv2
 import logging
@@ -113,7 +112,6 @@ t = threading.Thread(target=hub_recv_image)
 t.daemon = True
 t.start()
 
-
 # check to see if this is the main thread of execution
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True,host='0.0.0.0')
