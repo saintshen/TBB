@@ -21,7 +21,7 @@ def ocr_qizi(roi):
     if (roi.shape[1]<100):
         print("closer")
     roi = imutils.resize(roi, 100)
-    # cv2.imshow('roi', roi)
+    cv2.imshow('roi', roi)
     # initialize a list of template matching scores
     scores = {}
     for (qizi, qiziROI) in qizis.items():
