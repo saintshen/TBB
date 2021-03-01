@@ -16,10 +16,8 @@ for ref in refs:
 
 def ocr_qizi(roi):
     roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
-    roi = cv2.threshold(roi, 30, 255, cv2.THRESH_BINARY_INV)[1]
+    roi = cv2.threshold(roi, 80, 255, cv2.THRESH_BINARY_INV)[1]
     roi = cv2.dilate(roi, None, iterations=1)
-    if (roi.shape[1]<100):
-        print("closer")
     roi = imutils.resize(roi, 100)
     cv2.imshow('roi', roi)
     # initialize a list of template matching scores

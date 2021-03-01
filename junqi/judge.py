@@ -9,10 +9,6 @@ import os
 import time
 from ocr import ocr_qizi
 
-# initialize a rectangular (wider than it is tall) and square
-# structuring kernel
-rectKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 3))
-sqKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-d", "--debug", default=False, help="debug mode")
@@ -24,6 +20,10 @@ def detect_color(frame,lower,upper):
     mask = cv2.inRange(hsv, lower, upper)
     # mask =  cv2.erode(mask, None, iterations=5)
     # mask = cv2.dilate(mask, None, iterations=5)
+    # initialize a rectangular (wider than it is tall) and square
+    # structuring kernel
+    rectKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (9, 3))
+    sqKernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, rectKernel)
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, sqKernel)
     # find contours in the mask
@@ -31,14 +31,13 @@ def detect_color(frame,lower,upper):
                             cv2.CHAIN_APPROX_SIMPLE)
     cnts = imutils.grab_contours(cnts)
     qizi = ''
-    if len(cnts) >0:
-        for c in cnts:
-            qizi = find_qizi(frame, c)
+    if len(cnts) == 1:
+        qizi = find_qizi(frame.copy(), cnts[0])
+    
     return qizi
         
 def find_qizi(frame,c):
-    # cv2.drawContours(frame, [c], -1, (240, 0, 159), 3)
-    # cv2.imshow('Frame', frame)
+    cv2.drawContours(frame, [c], -1, (240, 0, 159), 3)
     rect = cv2.minAreaRect(c)
     (_, _, angle) = rect
     
@@ -116,17 +115,18 @@ while True:
         print("Can't receive frame (stream end?). Exiting ...")
         break
 
-    # frame = imutils.resize(frame, width=1200)
+    frame = imutils.resize(frame, width=1080)
     
     green =detect_color(frame, greenLower, greenUpper)
     blue = detect_color(frame, blueLower, blueUpper)
-    red = detect_color(frame, redLower, redUpper)
-    yellow = detect_color(frame, yellowLower, yellowUpper)
+    # red = detect_color(frame, redLower, redUpper)
+    # yellow = detect_color(frame, yellowLower, yellowUpper)
 
     # show the frame to our screen
     if args['debug']:
         print('green {}, \t blue {}, \t red {}, \t yellow {}'.format(green, blue, red, yellow))
-    # cv2.imshow("Frame", frame)
+    
+    cv2.imshow("Frame", frame)
     key = cv2.waitKey(30)
     if key == ord('q') or key == 27:
         break
