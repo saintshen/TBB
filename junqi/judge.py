@@ -37,7 +37,6 @@ def detect_color(frame,lower,upper):
     return qizi
         
 def find_qizi(frame,c):
-    cv2.drawContours(frame, [c], -1, (240, 0, 159), 3)
     rect = cv2.minAreaRect(c)
     (_, _, angle) = rect
     
@@ -96,10 +95,10 @@ yellow = ''
 greenLower = (38, 80, 37)
 greenUpper = (64, 255, 255)
 
-blueLower = (102, 70, 116)
-blueUpper = (118, 255, 255)
+blueLower = (84, 52, 73)
+blueUpper = (123, 255, 255)
 
-redLower = (174, 168, 130)
+redLower = (173, 158, 128)
 redUpper = (180, 255, 255)
 
 yellowLower = (16, 140, 70)
@@ -117,10 +116,10 @@ while True:
 
     frame = imutils.resize(frame, width=1080)
     
-    green =detect_color(frame, greenLower, greenUpper)
-    blue = detect_color(frame, blueLower, blueUpper)
+    # green =detect_color(frame, greenLower, greenUpper)
+    # blue = detect_color(frame, blueLower, blueUpper)
     # red = detect_color(frame, redLower, redUpper)
-    # yellow = detect_color(frame, yellowLower, yellowUpper)
+    yellow = detect_color(frame, yellowLower, yellowUpper)
 
     # show the frame to our screen
     if args['debug']:

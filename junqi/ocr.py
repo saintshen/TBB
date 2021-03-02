@@ -11,14 +11,14 @@ for ref in refs:
     image = cv2.imread(ref)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     image = cv2.threshold(image, 20, 255, cv2.THRESH_BINARY_INV)[1]
-    image = imutils.resize(image, 100)
+    image = imutils.resize(image, 150)
     qizis[os.path.basename(ref).split('.')[0]] = image
 
 def ocr_qizi(roi):
     roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
-    roi = cv2.threshold(roi, 80, 255, cv2.THRESH_BINARY_INV)[1]
-    roi = cv2.dilate(roi, None, iterations=1)
-    roi = imutils.resize(roi, 100)
+    roi = cv2.threshold(roi, 40, 255, cv2.THRESH_BINARY_INV)[1]
+    # roi = cv2.dilate(roi, None, iterations=1)
+    roi = imutils.resize(roi, 150)
     cv2.imshow('roi', roi)
     # initialize a list of template matching scores
     scores = {}
